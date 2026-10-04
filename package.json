@@ -5,6 +5,7 @@
   "dependencies": {
     "@expo/html-elements": "^0.12.5",
     "@expo/ui": "~57.0.21",
+    "@expo/vector-icons": "^15.0.2",
     "@gluestack-ui/core": "^5.0.15",
     "@gluestack-ui/utils": "^5.0.6",
     "@hookform/resolvers": "^5.9.1",
@@ -15,6 +16,7 @@
     "expo-font": "~57.0.4",
     "expo-glass-effect": "~57.0.4",
     "expo-image": "~57.0.5",
+    "expo-linear-gradient": "~57.0.2",
     "expo-linking": "~57.0.11",
     "expo-router": "~57.0.24",
     "expo-splash-screen": "~57.0.9",
@@ -30,6 +32,7 @@
     "react-native": "0.86.3",
     "react-native-css": "^3.0.7",
     "react-native-gesture-handler": "~2.32.0",
+    "react-native-keyboard-controller": "1.21.9",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
@@ -44,6 +47,8 @@
     "@tailwindcss/postcss": "^4.3.3",
     "@types/react": "~19.2.2",
     "babel-plugin-module-resolver": "^5.0.3",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~57.0.2",
     "expo-mcp": "~0.2.1",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.3"

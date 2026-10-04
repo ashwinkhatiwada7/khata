@@ -3,111 +3,231 @@
 @import "tailwindcss/utilities.css";
 @import "nativewind/theme";
 
-/* ─── Theme: design tokens (light / dark) ─────────────────────────
+/* ─── Theme: "Violet Task" design tokens (light / dark) ──────────────
+   Sampled from the Task Management UI mockups.
+   60% → background / card (soft white / lavender)
+   30% → secondary / muted surfaces (lavender tints, text greys)
+   10% → primary violet + category accents (CTA, active tab, rings)
    1. :root              — light defaults (all platforms)
-   2. @media dark :root  — dark defaults; nativewind maps this to
-                           Appearance.getColorScheme() on native.
-   3. :root.dark / :root.light — higher specificity for web class toggle. */
+   2. @media dark :root  — dark defaults (Appearance on native)
+   3. :root.dark / :root.light — manual class toggle on web          */
 @layer theme {
   :root {
-    --primary: 23 23 23;
-    --primary-foreground: 250 250 250;
-    --card: 255 255 255;
-    --secondary: 245 245 245;
-    --secondary-foreground: 23 23 23;
-    --background: 255 255 255;
-    --popover: 255 255 255;
-    --popover-foreground: 10 10 10;
-    --muted: 245 245 245;
-    --muted-foreground: 115 115 115;
-    --destructive: 231 0 11;
-    --foreground: 10 10 10;
-    --border: 229 229 229;
-    --input: 229 229 229;
-    --ring: 212 212 212;
-    --accent: 247 247 247;
-    --accent-foreground: 52 52 52;
+    /* Core surfaces */
+    --background: #f8f7fe;
+    --foreground: #24252c;
+    --card: #ffffff;
+    --card-foreground: #24252c;
+    --popover: #ffffff;
+    --popover-foreground: #24252c;
+
+    /* Brand */
+    --primary: #5f33e1;
+    --primary-foreground: #ffffff;
+    --secondary: #ede8ff;
+    --secondary-foreground: #5f33e1;
+    --accent: #eee9ff;
+    --accent-foreground: #5f33e1;
+
+    /* Neutrals */
+    --muted: #f4f3f8;
+    --muted-foreground: #6e6a7c;
+    --border: #eceaf5;
+    --input: #ede8ff;
+    --ring: #8b6cef;
+
+    /* Feedback */
+    --destructive: #e5484d;
+    --destructive-foreground: #ffffff;
+    --success: #22a06b;
+    --warning: #ff9142;
+
+    /* Category / status palette */
+    --office: #f478b8;
+    --office-soft: #ffe4f2;
+    --personal: #9260f4;
+    --personal-soft: #ede4ff;
+    --study: #ff9142;
+    --study-soft: #ffe6d4;
+    --info: #0087ff;
+    --info-soft: #e7f3ff;
+    --peach: #f06e4e;
+    --peach-soft: #ffe9e1;
+    --highlight: #ffd12e;
+    --highlight-soft: #fff7d9;
+
+    /* Bottom tab bar */
+    --tabbar: #eee9ff;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --primary: 255 245 245;
-      --primary-foreground: 23 23 23;
-      --card: 23 23 23;
-      --secondary: 38 38 38;
-      --secondary-foreground: 250 250 250;
-      --background: 10 10 10;
-      --popover: 23 23 23;
-      --popover-foreground: 250 250 250;
-      --muted: 38 38 38;
-      --muted-foreground: 161 161 161;
-      --destructive: 255 100 103;
-      --foreground: 250 250 250;
-      --border: 46 46 46;
-      --input: 46 46 46;
-      --accent: 38 38 38;
-      --accent-foreground: 250 250 250;
-      --ring: 115 115 115;
+      --background: #121019;
+      --foreground: #f4f2fa;
+      --card: #1c1926;
+      --card-foreground: #f4f2fa;
+      --popover: #221e2e;
+      --popover-foreground: #f4f2fa;
+
+      --primary: #7c5cfa;
+      --primary-foreground: #ffffff;
+      --secondary: #2a2342;
+      --secondary-foreground: #c9bbff;
+      --accent: #2a2342;
+      --accent-foreground: #c9bbff;
+
+      --muted: #24212f;
+      --muted-foreground: #a09bb2;
+      --border: #2e2a3b;
+      --input: #2a2342;
+      --ring: #9b82ff;
+
+      --destructive: #ff6b6f;
+      --destructive-foreground: #1a0b0c;
+      --success: #3dd68c;
+      --warning: #ffa866;
+
+      --office: #ff8fc8;
+      --office-soft: #3a1d2e;
+      --personal: #a985ff;
+      --personal-soft: #2c2148;
+      --study: #ffa866;
+      --study-soft: #3a2718;
+      --info: #4da8ff;
+      --info-soft: #172b42;
+      --peach: #ff8a6b;
+      --peach-soft: #3b231c;
+      --highlight: #ffda57;
+      --highlight-soft: #3a3215;
+
+      --tabbar: #1f1a30;
     }
   }
 
   :root.dark {
-    --primary: 255 245 245;
-    --primary-foreground: 23 23 23;
-    --card: 23 23 23;
-    --secondary: 38 38 38;
-    --secondary-foreground: 250 250 250;
-    --background: 10 10 10;
-    --popover: 23 23 23;
-    --popover-foreground: 250 250 250;
-    --muted: 38 38 38;
-    --muted-foreground: 161 161 161;
-    --destructive: 255 100 103;
-    --foreground: 250 250 250;
-    --border: 46 46 46;
-    --input: 46 46 46;
-    --accent: 38 38 38;
-    --accent-foreground: 250 250 250;
-    --ring: 115 115 115;
+    --background: #121019;
+    --foreground: #f4f2fa;
+    --card: #1c1926;
+    --card-foreground: #f4f2fa;
+    --popover: #221e2e;
+    --popover-foreground: #f4f2fa;
+
+    --primary: #7c5cfa;
+    --primary-foreground: #ffffff;
+    --secondary: #2a2342;
+    --secondary-foreground: #c9bbff;
+    --accent: #2a2342;
+    --accent-foreground: #c9bbff;
+
+    --muted: #24212f;
+    --muted-foreground: #a09bb2;
+    --border: #2e2a3b;
+    --input: #2a2342;
+    --ring: #9b82ff;
+
+    --destructive: #ff6b6f;
+    --destructive-foreground: #1a0b0c;
+    --success: #3dd68c;
+    --warning: #ffa866;
+
+    --office: #ff8fc8;
+    --office-soft: #3a1d2e;
+    --personal: #a985ff;
+    --personal-soft: #2c2148;
+    --study: #ffa866;
+    --study-soft: #3a2718;
+    --info: #4da8ff;
+    --info-soft: #172b42;
+    --peach: #ff8a6b;
+    --peach-soft: #3b231c;
+    --highlight: #ffda57;
+    --highlight-soft: #3a3215;
+
+    --tabbar: #1f1a30;
   }
 
   :root.light {
-    --primary: 23 23 23;
-    --primary-foreground: 250 250 250;
-    --card: 255 255 255;
-    --secondary: 245 245 245;
-    --secondary-foreground: 23 23 23;
-    --background: 255 255 255;
-    --popover: 255 255 255;
-    --popover-foreground: 10 10 10;
-    --muted: 245 245 245;
-    --muted-foreground: 115 115 115;
-    --destructive: 231 0 11;
-    --foreground: 10 10 10;
-    --border: 229 229 229;
-    --input: 229 229 229;
-    --ring: 212 212 212;
-    --accent: 247 247 247;
-    --accent-foreground: 52 52 52;
+    --background: #f8f7fe;
+    --foreground: #24252c;
+    --card: #ffffff;
+    --card-foreground: #24252c;
+    --popover: #ffffff;
+    --popover-foreground: #24252c;
+
+    --primary: #5f33e1;
+    --primary-foreground: #ffffff;
+    --secondary: #ede8ff;
+    --secondary-foreground: #5f33e1;
+    --accent: #eee9ff;
+    --accent-foreground: #5f33e1;
+
+    --muted: #f4f3f8;
+    --muted-foreground: #6e6a7c;
+    --border: #eceaf5;
+    --input: #ede8ff;
+    --ring: #8b6cef;
+
+    --destructive: #e5484d;
+    --destructive-foreground: #ffffff;
+    --success: #22a06b;
+    --warning: #ff9142;
+
+    --office: #f478b8;
+    --office-soft: #ffe4f2;
+    --personal: #9260f4;
+    --personal-soft: #ede4ff;
+    --study: #ff9142;
+    --study-soft: #ffe6d4;
+    --info: #0087ff;
+    --info-soft: #e7f3ff;
+    --peach: #f06e4e;
+    --peach-soft: #ffe9e1;
+    --highlight: #ffd12e;
+    --highlight-soft: #fff7d9;
+
+    --tabbar: #eee9ff;
   }
 }
 
+/* Variables now hold full hex values, so map them with var() — not rgb(var()). */
 @theme inline {
-  --color-primary: rgb(var(--primary));
-  --color-primary-foreground: rgb(var(--primary-foreground));
-  --color-card: rgb(var(--card));
-  --color-secondary: rgb(var(--secondary));
-  --color-secondary-foreground: rgb(var(--secondary-foreground));
-  --color-background: rgb(var(--background));
-  --color-popover: rgb(var(--popover));
-  --color-popover-foreground: rgb(var(--popover-foreground));
-  --color-muted: rgb(var(--muted));
-  --color-muted-foreground: rgb(var(--muted-foreground));
-  --color-destructive: rgb(var(--destructive));
-  --color-foreground: rgb(var(--foreground));
-  --color-border: rgb(var(--border));
-  --color-input: rgb(var(--input));
-  --color-ring: rgb(var(--ring));
-  --color-accent: rgb(var(--accent));
-  --color-accent-foreground: rgb(var(--accent-foreground));
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  --color-office: var(--office);
+  --color-office-soft: var(--office-soft);
+  --color-personal: var(--personal);
+  --color-personal-soft: var(--personal-soft);
+  --color-study: var(--study);
+  --color-study-soft: var(--study-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-peach: var(--peach);
+  --color-peach-soft: var(--peach-soft);
+  --color-highlight: var(--highlight);
+  --color-highlight-soft: var(--highlight-soft);
+
+  --color-tabbar: var(--tabbar);
 }
