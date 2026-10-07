@@ -1,5 +1,7 @@
 import { Stack } from "expo-router";
 
+// Default header for every customer screen. Screens redefine the dynamic parts
+// (title, headerRight) with their own <Stack.Screen options={...} />.
 const headerOptions = {
   headerShown: true,
   // Arrow only: iOS otherwise shows the previous screen's title (customer name).
@@ -12,39 +14,17 @@ const headerOptions = {
 
 export default function CustomerLayout() {
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <Stack.Screen
-        name="index"
-        options={{
-          title: "",
-        }}
-      />
-      <Stack.Screen
-        name="search"
-        options={{
-          title: "",
-        }}
-      />
-      <Stack.Screen
-        name="[customerId]/index"
-        options={{ ...headerOptions, title: "Customer" }}
-      />
+    <Stack screenOptions={headerOptions}>
+      {/* These screens render their own header UI. */}
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="search" options={{ headerShown: false }} />
+
+      <Stack.Screen name="[customerId]/index" options={{ title: "Customer" }} />
       <Stack.Screen
         name="[customerId]/edit"
-        options={{
-          ...headerOptions,
-
-          title: "Edit Customer",
-        }}
+        options={{ title: "Edit Customer" }}
       />
-      <Stack.Screen
-        name="create"
-        options={{ ...headerOptions, title: "New Customer" }}
-      />
+      <Stack.Screen name="create" options={{ title: "New Customer" }} />
     </Stack>
   );
 }

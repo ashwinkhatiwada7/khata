@@ -1,13 +1,23 @@
 import {
   signupDefaultValues,
   signupSchema,
-  SignupValues,
+  SignupValueType,
 } from "@/components/auth/schemas";
 import { Box } from "@/components/ui/box";
 import { Button, ButtonText } from "@/components/ui/button";
+import {
+  Checkbox,
+  CheckboxIcon,
+  CheckboxIndicator,
+  CheckboxLabel,
+} from "@/components/ui/checkbox";
+import { CheckIcon } from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
+import { authClient } from "@/lib/authClient";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "expo-router";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
@@ -22,12 +32,38 @@ const SCROLL_CONTENT = {
   paddingBottom: 40,
 } as const;
 export default function Signup() {
-  const form = useForm<SignupValues>({
+  const [isSigning, setSigning] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const form = useForm<SignupValueType>({
     resolver: zodResolver(signupSchema),
     defaultValues: signupDefaultValues,
-    reValidateMode: "onSubmit",
+    reValidateMode: "onChange",
   });
-  function onSubmit() {}
+  async function onSubmit(signupValue: SignupValueType) {
+    if (isSigning) return;
+    setErrorMessage("");
+    setSigning(true);
+
+    try {
+      const { data, error } = await authClient.signUp.email({
+        name: signupValue.name,
+        email: signupValue.email,
+        password: signupValue.password,
+        phone: signupValue.phone,
+      });
+
+      if (error) {
+        console.log(error);
+        setErrorMessage(error?.message || "Error in creating account!");
+        return;
+      }
+    } catch (error) {
+      setErrorMessage("Something went wrong!");
+      console.log(error);
+    } finally {
+      setSigning(false);
+    }
+  }
   return (
     <View className="flex-1 bg-background">
       <SafeAreaView style={{ flex: 1 }}>
@@ -77,7 +113,6 @@ export default function Signup() {
               </Box>
             )}
           />
-
           <Controller
             name="phone"
             control={form.control}
@@ -199,12 +234,48 @@ export default function Signup() {
               </Box>
             )}
           />
+          <Controller
+            name="terms"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Box className="gap-2">
+                <Checkbox
+                  className="border-border"
+                  value="terms"
+                  isChecked={field.value}
+                  onChange={field.onChange}
+                  isDisabled={false}
+                  isInvalid={!!fieldState.error}
+                >
+                  <CheckboxIndicator>
+                    <CheckboxIcon as={CheckIcon} />
+                  </CheckboxIndicator>
+                  <CheckboxLabel>
+                    {" "}
+                    Accepts the terms and conditions
+                  </CheckboxLabel>
+                </Checkbox>
 
+                {fieldState.error && (
+                  <Text className=" text-xs text-destructive">
+                    {fieldState.error.message}
+                  </Text>
+                )}
+              </Box>
+            )}
+          />
+          {errorMessage && (
+            <Text className="font-bold text-destructive">{errorMessage}</Text>
+          )}
           <Button
             onPress={form.handleSubmit(onSubmit)}
             className="mt-2 h-14 flex-row items-center justify-center gap-2 rounded-2xl bg-primary active:opacity-90 disabled:opacity-60"
           >
-            <ButtonText>Create account</ButtonText>
+            {isSigning ? (
+              <Spinner size="small" color="grey" />
+            ) : (
+              <ButtonText>Create account </ButtonText>
+            )}
           </Button>
           <Box className="flex flex-row gap-2">
             <Text className="text-foreground text-sm ">

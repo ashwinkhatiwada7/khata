@@ -12,14 +12,16 @@ function tabIcon(active: IconName, inactive: IconName) {
   return function TabIcon({
     focused,
     color,
+    size,
   }: {
     focused: boolean;
     color: ColorValue;
+    size: number;
   }) {
     return (
       <Ionicons
         name={focused ? active : inactive}
-        size={22}
+        size={size}
         color={color as string}
       />
     );
@@ -59,6 +61,7 @@ export default function AppLayout() {
         name="transaction"
         options={{
           title: "Transaction",
+
           tabBarIcon: tabIcon("swap-horizontal", "swap-horizontal-outline"),
         }}
       />
@@ -66,6 +69,7 @@ export default function AppLayout() {
         name="customer"
         options={{
           title: "Customer",
+
           tabBarIcon: tabIcon("people", "people-outline"),
         }}
       />

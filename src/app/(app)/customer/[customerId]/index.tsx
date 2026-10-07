@@ -36,10 +36,6 @@ export default function CustomerScreen() {
       <Stack.Screen
         options={{
           title: customer?.name ?? "Customer",
-          headerTitleStyle: {
-            // fontSize: 10,
-          },
-          headerLeft: () => {},
           headerRight: customer
             ? () => (
                 <Pressable

@@ -1,5 +1,4 @@
 import { loginSchema, type LoginValues } from "@/components/auth/schemas";
-import { useAuth } from "@/providers/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
@@ -24,8 +23,6 @@ const SCROLL_CONTENT = {
 } as const;
 
 export default function Login() {
-  const { signIn } = useAuth();
-
   const {
     control,
     handleSubmit,
@@ -35,7 +32,7 @@ export default function Login() {
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = handleSubmit(() => signIn());
+  const onSubmit = handleSubmit(() => console.log("signedb in"));
 
   return (
     <View className="flex-1 bg-background">
@@ -137,12 +134,6 @@ export default function Login() {
             <Text> Don&apos;t have an account?</Text>
             <Link href="/(auth)/signup">
               <Text className="text-primary">Create account</Text>
-            </Link>
-          </View>
-
-          <View>
-            <Link href={"/(app)/home"}>
-              <Text>go to home</Text>
             </Link>
           </View>
         </KeyboardAwareScrollView>
