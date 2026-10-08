@@ -1,6 +1,8 @@
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import { authClient } from "@/lib/authClient";
+import { queryClient } from "@/lib/query-client";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
@@ -46,7 +48,9 @@ export default function RootLayout() {
         <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
-          <RootNavigator />
+          <QueryClientProvider client={queryClient}>
+            <RootNavigator />
+          </QueryClientProvider>
         </ThemeProvider>
       </KeyboardProvider>
     </GluestackUIProvider>

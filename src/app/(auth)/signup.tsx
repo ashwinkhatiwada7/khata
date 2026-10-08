@@ -32,7 +32,7 @@ const SCROLL_CONTENT = {
   paddingBottom: 40,
 } as const;
 export default function Signup() {
-  const [isSigning, setSigning] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const form = useForm<SignupValueType>({
     resolver: zodResolver(signupSchema),
@@ -40,9 +40,9 @@ export default function Signup() {
     reValidateMode: "onChange",
   });
   async function onSubmit(signupValue: SignupValueType) {
-    if (isSigning) return;
+    if (isLoading) return;
     setErrorMessage("");
-    setSigning(true);
+    setIsLoading(true);
 
     try {
       const { data, error } = await authClient.signUp.email({
@@ -61,7 +61,7 @@ export default function Signup() {
       setErrorMessage("Something went wrong!");
       console.log(error);
     } finally {
-      setSigning(false);
+      setIsLoading(false);
     }
   }
   return (
@@ -271,7 +271,7 @@ export default function Signup() {
             onPress={form.handleSubmit(onSubmit)}
             className="mt-2 h-14 flex-row items-center justify-center gap-2 rounded-2xl bg-primary active:opacity-90 disabled:opacity-60"
           >
-            {isSigning ? (
+            {isLoading ? (
               <Spinner size="small" color="grey" />
             ) : (
               <ButtonText>Create account </ButtonText>

@@ -1,14 +1,12 @@
 import { loginSchema, type LoginValues } from "@/components/auth/schemas";
+import { Box } from "@/components/ui/box";
+import { Spinner } from "@/components/ui/spinner";
+import { authClient } from "@/lib/authClient";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "expo-router";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import {
-  ActivityIndicator,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -23,16 +21,33 @@ const SCROLL_CONTENT = {
 } as const;
 
 export default function Login() {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<LoginValues>({
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = handleSubmit(() => console.log("signedb in"));
+  async function onSubmit(loginValue: LoginValues) {
+    if (isLoading) return;
+    try {
+      const { data, error } = await authClient.signIn.email({
+        email: loginValue.email,
+        password: loginValue.password,
+      });
+
+      if (error) {
+        setErrorMessage(error?.message || "Failed to login");
+        return;
+      }
+    } catch (error) {
+      setErrorMessage(
+        "Something went wrong! Please check your internet connection",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <View className="flex-1 bg-background">
@@ -55,33 +70,35 @@ export default function Login() {
           <View className="gap-1.5">
             <Text className="text-sm font-medium text-foreground">Email</Text>
             <Controller
-              control={control}
+              control={form.control}
               name="email"
-              render={({ field: { value, onChange, onBlur } }) => (
-                <TextInput
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="you@example.com"
-                  placeholderTextColor={PLACEHOLDER_COLOR}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  autoCorrect={false}
-                  textContentType="emailAddress"
-                  returnKeyType="next"
-                  submitBehavior="submit"
-                  className={`h-14 rounded-2xl border bg-card px-4 text-base text-foreground ${
-                    errors.email ? "border-destructive" : "border-border"
-                  }`}
-                />
+              render={({ field, fieldState }) => (
+                <Box>
+                  <TextInput
+                    value={field.value}
+                    onChangeText={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder="you@example.com"
+                    placeholderTextColor={PLACEHOLDER_COLOR}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    autoCorrect={false}
+                    textContentType="emailAddress"
+                    returnKeyType="next"
+                    submitBehavior="submit"
+                    className={`h-14 rounded-2xl border bg-card px-4 text-base text-foreground ${
+                      fieldState.error ? "border-destructive" : "border-border"
+                    }`}
+                  />
+                  {fieldState.error ? (
+                    <Text className="text-xs text-destructive">
+                      {fieldState.error.message}
+                    </Text>
+                  ) : null}
+                </Box>
               )}
             />
-            {errors.email ? (
-              <Text className="text-xs text-destructive">
-                {errors.email.message}
-              </Text>
-            ) : null}
           </View>
 
           <View className="gap-1.5">
@@ -89,45 +106,52 @@ export default function Login() {
               Password
             </Text>
             <Controller
-              control={control}
+              control={form.control}
               name="password"
-              render={({ field: { value, onChange, onBlur } }) => (
-                <TextInput
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="Enter your password"
-                  placeholderTextColor={PLACEHOLDER_COLOR}
-                  secureTextEntry
-                  autoCapitalize="none"
-                  autoComplete="password"
-                  autoCorrect={false}
-                  textContentType="password"
-                  returnKeyType="go"
-                  onSubmitEditing={onSubmit}
-                  className={`h-14 rounded-2xl border bg-card px-4 text-base text-foreground ${
-                    errors.password ? "border-destructive" : "border-border"
-                  }`}
-                />
+              render={({ field, fieldState }) => (
+                <Box>
+                  <TextInput
+                    value={field.value}
+                    onChangeText={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder="Enter your password"
+                    placeholderTextColor={PLACEHOLDER_COLOR}
+                    secureTextEntry
+                    autoCapitalize="none"
+                    autoComplete="password"
+                    autoCorrect={false}
+                    textContentType="password"
+                    returnKeyType="go"
+                    className={`h-14 rounded-2xl border bg-card px-4 text-base text-foreground ${
+                      fieldState.error ? "border-destructive" : "border-border"
+                    }`}
+                  />
+                  {fieldState.error ? (
+                    <Text className="text-xs text-destructive">
+                      {fieldState.error.message}
+                    </Text>
+                  ) : null}
+                </Box>
               )}
             />
-            {errors.password ? (
-              <Text className="text-xs text-destructive">
-                {errors.password.message}
-              </Text>
-            ) : null}
           </View>
+          {errorMessage && (
+            <Text className="text-destructive text-sm">{errorMessage}</Text>
+          )}
 
           <Pressable
-            accessibilityRole="button"
-            disabled={isSubmitting}
-            onPress={onSubmit}
+            disabled={isLoading}
+            onPress={form.handleSubmit(onSubmit)}
             className="mt-2 h-14 flex-row items-center justify-center gap-2 rounded-2xl bg-primary active:opacity-90 disabled:opacity-60"
           >
-            {isSubmitting ? <ActivityIndicator color="#ffffff" /> : null}
-            <Text className="text-lg font-semibold text-primary-foreground">
-              {isSubmitting ? "Signing in..." : "Sign In"}
-            </Text>
+            {isLoading ? (
+              // <ActivityIndicator color="#ffffff" />
+              <Spinner />
+            ) : (
+              <Text className="text-lg font-semibold text-primary-foreground">
+                Sign In
+              </Text>
+            )}
           </Pressable>
 
           <View className="flex flex-row">
