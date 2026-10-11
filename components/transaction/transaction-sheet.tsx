@@ -50,7 +50,7 @@ export default function TransactionSheet({
             <Ionicons name="close-outline" size={28} />
           </Pressable>
 
-          <TransactionForm />
+          <TransactionForm onClose={onClose} />
         </Box>
       </ActionsheetContent>
     </Actionsheet>

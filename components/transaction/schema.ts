@@ -94,12 +94,12 @@ export type CreditSchemaType = z.infer<typeof CreditSchema>;
 
 export const EMPTY_CREDIT_ITEM: CredititemsSchemaType = {
   name: "",
-  qty: "1",
+  qty: "",
   price: "",
 };
 
 export const CreditSchemaDefaultValues = {
-  items: [EMPTY_CREDIT_ITEM],
+  items: [] as CredititemsSchemaType[],
 };
 
 export const CreditSchemaFieldKeys = Object.keys(

@@ -2,10 +2,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { View } from "react-native";
-import { Button, ButtonText } from "../ui/button";
+import { Button, ButtonIcon } from "../ui/button";
+import { ArrowLeftIcon } from "../ui/icon";
 import CreditForm from "./credit-form";
 import PaymentForm from "./payment-form";
 import {
+  CreditSchemaFieldKeys,
   customerSchemaFieldKeys,
   transactionSchema,
   transactionSchemaDefaultValues,
@@ -19,10 +21,13 @@ const STEPS = [
   { label: "Customer" },
   { label: "Type" },
   { label: "Details" },
+  {
+    label: "Review",
+  },
 ] as const;
 const LAST_STEP = STEPS.length - 1;
 
-export default function TransactionForm() {
+export default function TransactionForm({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState(0);
 
   const form = useForm<transactionSchemaType>({
@@ -34,6 +39,7 @@ export default function TransactionForm() {
   async function handleNext() {
     if (step === 0 && !(await form.trigger(customerSchemaFieldKeys))) return;
     if (step === 1 && !(await form.trigger(typeSchemaFieldKeys))) return;
+    if (step === 2 && !(await form.trigger(CreditSchemaFieldKeys))) return;
     setStep((s) => s + 1);
   }
 
@@ -52,17 +58,26 @@ export default function TransactionForm() {
           ))}
         </View>
       </View>
-      {step == 0 && <SelectCustomer onSelected={handleNext} />}
-      {step == 1 && <SelectTransactionType onSelected={handleNext} />}
-      {step == 2 && (type === "payment" ? <PaymentForm /> : <CreditForm />)}
 
       <View>
         {step > 0 && (
-          <Button onPress={handleBack} variant="outline">
-            <ButtonText>Back</ButtonText>
+          <Button
+            className="w-8 h-8 rounded-xl mt-4"
+            onPress={handleBack}
+            variant="outline"
+          >
+            <ButtonIcon as={ArrowLeftIcon} />
           </Button>
         )}
       </View>
+      {step === 0 && <SelectCustomer onSelected={handleNext} />}
+      {step === 1 && <SelectTransactionType onSelected={handleNext} />}
+      {step === 2 &&
+        (type === "payment" ? (
+          <PaymentForm />
+        ) : (
+          <CreditForm onClose={onClose} />
+        ))}
     </FormProvider>
   );
 }
