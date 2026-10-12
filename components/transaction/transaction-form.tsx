@@ -21,18 +21,16 @@ const STEPS = [
   { label: "Customer" },
   { label: "Type" },
   { label: "Details" },
-  {
-    label: "Review",
-  },
 ] as const;
 const LAST_STEP = STEPS.length - 1;
 
 export default function TransactionForm({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState(0);
-
+  const [isStepsComplete, setIsStepsComplete] = useState(false);
   const form = useForm<transactionSchemaType>({
     resolver: zodResolver(transactionSchema),
     defaultValues: transactionSchemaDefaultValues,
+    mode: "onTouched",
   });
   const type = useWatch({ control: form.control, name: "type" });
 
@@ -48,7 +46,7 @@ export default function TransactionForm({ onClose }: { onClose: () => void }) {
   }
   return (
     <FormProvider {...form}>
-      <View className="w-full z-[-2] flex items-center justify-center">
+      <View className="w-full z-[-2] mt-5 flex items-center justify-center">
         <View className="mt-2 flex-row gap-1.5">
           {STEPS.map((s, i) => (
             <View
@@ -60,7 +58,7 @@ export default function TransactionForm({ onClose }: { onClose: () => void }) {
       </View>
 
       <View>
-        {step > 0 && (
+        {step > 0 && !isStepsComplete && (
           <Button
             className="w-8 h-8 rounded-xl mt-4"
             onPress={handleBack}
@@ -74,9 +72,15 @@ export default function TransactionForm({ onClose }: { onClose: () => void }) {
       {step === 1 && <SelectTransactionType onSelected={handleNext} />}
       {step === 2 &&
         (type === "payment" ? (
-          <PaymentForm />
+          <PaymentForm
+            onClose={onClose}
+            onComplete={() => setIsStepsComplete(true)}
+          />
         ) : (
-          <CreditForm onClose={onClose} />
+          <CreditForm
+            onClose={onClose}
+            onComplete={() => setIsStepsComplete(true)}
+          />
         ))}
     </FormProvider>
   );

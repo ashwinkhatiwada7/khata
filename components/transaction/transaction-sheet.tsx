@@ -1,15 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Pressable } from "react-native";
+import { Pressable, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Actionsheet,
   ActionsheetBackdrop,
   ActionsheetContent,
+  ActionsheetDragIndicator,
+  ActionsheetDragIndicatorWrapper,
 } from "../ui/actionsheet";
 import { Box } from "../ui/box";
-import { transactionSchema, transactionSchemaType } from "./schema";
 import TransactionForm from "./transaction-form";
 
 export default function TransactionSheet({
@@ -19,30 +18,32 @@ export default function TransactionSheet({
   isOpen: boolean;
   onClose: () => void;
 }) {
-  const insets = useSafeAreaInsets();
-  const form = useForm<transactionSchemaType>({
-    resolver: zodResolver(transactionSchema),
-  });
+  const { top, bottom } = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
+
   return (
     <Actionsheet
-      closeOnOverlayClick={false}
+      closeOnOverlayClick={true}
       isOpen={isOpen}
       onClose={onClose}
-      className=""
       useRNModal
     >
       <ActionsheetBackdrop />
       <ActionsheetContent
         style={{
-          paddingBottom: insets.bottom + 12,
-          borderRadius: 10,
+          height: height - top,
+          maxHeight: height - top,
+          minHeight: height - top,
+          paddingBottom: bottom + 12,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
         }}
         className="pb-0 rounded-t-4xl"
       >
-        {/* <ActionsheetDragIndicatorWrapper>
+        <ActionsheetDragIndicatorWrapper>
           <ActionsheetDragIndicator className=" bg-black w-10 h-2" />
-        </ActionsheetDragIndicatorWrapper> */}
-        <Box className="min-h-400 w-full">
+        </ActionsheetDragIndicatorWrapper>
+        <Box className=" w-full">
           <Pressable
             onPress={onClose}
             className=" absolute top-[-10] right-0 w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center"

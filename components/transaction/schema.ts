@@ -52,13 +52,18 @@ export const typeSchemaFieldKeys = Object.keys(
 ) as (keyof typeSchemaType)[];
 
 //3. payment schema
+export const PAYMENT_METHODS = ["cash", "bankTransfer", "esewa", "khalti"];
 export const paymentFormSchema = z.object({
   amount: moneyString({ label: "Rs", allowZero: false }),
+  paymentMethod: z.enum(PAYMENT_METHODS).default("cash"),
+  remark: z.string().trim().max(100, "Maximum 100 Characters"),
 });
 export type paymentFormSchemaType = z.infer<typeof paymentFormSchema>;
 
 export const paymentFormSchemaDefaultValues = {
   amount: "",
+  paymentMethod: "cash",
+  remark: "",
 };
 
 export const paymentFormSchemaFieldKeys = Object.keys(
@@ -112,6 +117,8 @@ export const transactionSchema = customerSchema
   // loose shapes: the branch not chosen is allowed to stay empty
   .extend({
     amount: z.string(),
+    paymentMethod: z.string(),
+    remark: z.string().optional(),
     items: z.array(
       z.object({ name: z.string(), qty: z.string(), price: z.string() }),
     ),

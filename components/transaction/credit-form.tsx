@@ -12,6 +12,7 @@ import {
   useWatch,
 } from "react-hook-form";
 import { FlatList, Pressable, Text, View } from "react-native";
+import { Box } from "../ui/box";
 import { Button, ButtonIcon, ButtonText } from "../ui/button";
 import { ArrowRightIcon } from "../ui/icon";
 import { Input, InputField } from "../ui/input";
@@ -23,7 +24,13 @@ import {
   transactionSchemaType,
 } from "./schema";
 
-export default function CreditForm({ onClose }: { onClose: () => void }) {
+export default function CreditForm({
+  onClose,
+  onComplete,
+}: {
+  onClose: () => void;
+  onComplete: () => void;
+}) {
   const {
     control,
     formState: { errors },
@@ -52,7 +59,11 @@ export default function CreditForm({ onClose }: { onClose: () => void }) {
     mutationFn: createCredit,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customers"] });
+      onComplete?.();
       setSaveSuccess(true);
+    },
+    onError: () => {
+      onComplete?.();
     },
   });
   const handleSave = () => {
@@ -67,7 +78,7 @@ export default function CreditForm({ onClose }: { onClose: () => void }) {
   };
   if (saveSucess) {
     return (
-      <View className="w-full items-center gap-3 py-10">
+      <Box className="w-full items-center gap-3 py-10">
         <Ionicons name="checkmark-circle" size={72} color="#16a34a" />
         <Text className="text-lg font-bold">Credit added successfully</Text>
         <Text className="text-center text-gray-600">
@@ -76,13 +87,33 @@ export default function CreditForm({ onClose }: { onClose: () => void }) {
         <Button onPress={onClose}>
           <ButtonText>Close</ButtonText>
         </Button>
-      </View>
+      </Box>
+    );
+  }
+
+  if (saveError) {
+    return (
+      <Box className="w-full items-center justify-around gap-10 py-10">
+        <Box className="items-center">
+          <Ionicons name="alert" size={72} color="#F31D0E" />
+          <Text className="text-lg text-destructive font-bold">
+            Failed to save credit
+          </Text>
+          <Text className="text-center text-gray-600">
+            Rs. {total.toFixed(2)} failed for {customer?.name}
+          </Text>
+        </Box>
+
+        <Button className="w-30 mt-10 rounded-2xl" onPress={onClose}>
+          <ButtonText>Close</ButtonText>
+        </Button>
+      </Box>
     );
   }
 
   return (
     <View className="w-full">
-      <View className="gap-3 pb-3">
+      <View className="gap-3 w-full items-center pb-3">
         <Text className="pr-10 text-lg font-bold">Add credit items</Text>
 
         <Controller
@@ -165,14 +196,14 @@ export default function CreditForm({ onClose }: { onClose: () => void }) {
 
         <Pressable
           onPress={addItem}
-          className="items-center rounded-xl bg-[#5f33e1] py-3 active:opacity-80"
+          className="items-center w-full rounded-xl bg-[#5f33e1] py-3 active:opacity-80"
         >
           <Text className="font-semibold text-white">+ Add item</Text>
         </Pressable>
 
         {fields.length > 0 && (
           <Text className="pt-1 text-sm font-semibold text-gray-600">
-            Added ({fields.length}) · Rs. {total.toFixed(2)}
+            Total ({fields.length}) · Rs. {total.toFixed(2)}
           </Text>
         )}
       </View>
@@ -181,7 +212,7 @@ export default function CreditForm({ onClose }: { onClose: () => void }) {
         data={fields}
         keyExtractor={(f) => f.id}
         style={{
-          maxHeight: 300,
+          maxHeight: 280,
         }}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
@@ -214,17 +245,15 @@ export default function CreditForm({ onClose }: { onClose: () => void }) {
           {errors.items.message}
         </Text>
       )}
-      {saveError && (
-        <Text className="pt-2 text-xs text-red-600">{saveError.message}</Text>
-      )}
+
       {fields.length > 0 && (
         <Button
           onPress={handleSave}
           variant="default"
           disabled={isPending}
-          className="w-full h-12 rounded-2xl"
+          className="w-full h-12 bg-success rounded-2xl"
         >
-          <ButtonText className="text-xl font-bold ">
+          <ButtonText className=" font-bold ">
             {isPending ? "Saving..." : "Save Credit"}
           </ButtonText>
           <ButtonIcon as={ArrowRightIcon} />
