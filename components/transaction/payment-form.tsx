@@ -1,4 +1,12 @@
+import { createPayment } from "@/api/transaction";
+import { ApiError } from "@/lib/client";
+import { queryClient } from "@/lib/query-client";
+import {
+  CreatePaymentPayload,
+  CreatePaymentResponse,
+} from "@/types/transaction-types";
 import { Ionicons } from "@expo/vector-icons";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
@@ -30,13 +38,34 @@ export default function PaymentForm({
   const { control, trigger } = useFormContext<transactionSchemaType>();
   const customer = useWatch({ control, name: "customer" });
   const amount = useWatch({ control, name: "amount" });
-  const paymentmethod = useWatch({ control, name: "paymentMethod" });
+  const paymentMethod = useWatch({ control, name: "paymentMethod" });
+  const remark = useWatch({ control, name: "remark" });
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const {
+    mutate: savePayment,
+    isPending,
+    error: saveError,
+  } = useMutation<CreatePaymentResponse, ApiError, CreatePaymentPayload>({
+    mutationFn: createPayment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
+      onComplete?.();
+      setSaveSuccess(true);
+    },
+    onError: () => {
+      onComplete?.();
+    },
+  });
 
   const handleSave = async () => {
     if (!(await trigger(paymentFormSchemaFieldKeys))) return;
-    onComplete?.();
-    setSaveSuccess(true);
+    savePayment({
+      customerId: customer.id,
+      amount: amount,
+      paymentMethod: paymentMethod,
+      remark: remark,
+    });
   };
 
   if (saveSuccess) {
@@ -47,6 +76,48 @@ export default function PaymentForm({
         <Text className="text-center text-gray-600">
           Rs. {Number(amount).toFixed(2)} from {customer?.name}
         </Text>
+        <Button className="w-30 mt-10 rounded-2xl" onPress={onClose}>
+          <ButtonText>Close</ButtonText>
+        </Button>
+      </Box>
+    );
+  }
+  if (saveError) {
+    if (saveError.status === 422) {
+      return (
+        <Box className="w-full items-center justify-around gap-10 py-10">
+          <Box className="items-center">
+            <Ionicons name="alert" size={72} color="#E1AF17" />
+            <Text className="text-lg text-warning font-bold">
+              Failed to save payment
+            </Text>
+            <Text className="text-center text-gray-600">
+              Rs. {amount} failed for {customer?.name}
+            </Text>
+            <Text className="text-2xl">{saveError.message}</Text>
+          </Box>
+
+          <Button className="w-30 mt-10 rounded-2xl" onPress={onClose}>
+            <ButtonText>Close</ButtonText>
+          </Button>
+        </Box>
+      );
+    }
+    return (
+      <Box className="w-full items-center justify-around gap-10 py-10">
+        <Box className="items-center">
+          <Ionicons name="alert" size={72} color="#F31D0E" />
+          <Text className="text-lg text-destructive font-bold">
+            Failed to save payment
+          </Text>
+          <Text className="text-center text-gray-600">
+            Rs. {amount} failed for {customer?.name}
+          </Text>
+          <Text>{saveError.message}</Text>
+
+          <Text>{saveError?.status}</Text>
+        </Box>
+
         <Button className="w-30 mt-10 rounded-2xl" onPress={onClose}>
           <ButtonText>Close</ButtonText>
         </Button>
@@ -86,7 +157,7 @@ export default function PaymentForm({
             >
               <InputField
                 placeholder="0.00"
-                className="text-3xl"
+                className="text-3xl leading-8 py-0"
                 keyboardType="decimal-pad"
                 value={field.value}
                 onChangeText={field.onChange}
@@ -197,17 +268,25 @@ export default function PaymentForm({
                 placeholder="Remarks..."
               />
             </Textarea>
+            {fieldState.error && (
+              <Text className="text-xs text-red-600">
+                {fieldState.error.message}
+              </Text>
+            )}
           </Box>
         )}
       />
 
       <Button
         onPress={handleSave}
+        isDisabled={isPending}
         variant="default"
         disabled={!amount}
         className="w-full mt-4 bg-success h-12 rounded-2xl"
       >
-        <ButtonText className=" font-bold">Save Payment</ButtonText>
+        <ButtonText className=" font-bold">
+          {isPending ? "Saving..." : "Save Payment"}
+        </ButtonText>
         <ButtonIcon as={ArrowRightIcon} />
       </Button>
     </View>

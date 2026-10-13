@@ -52,7 +52,7 @@ export const typeSchemaFieldKeys = Object.keys(
 ) as (keyof typeSchemaType)[];
 
 //3. payment schema
-export const PAYMENT_METHODS = ["cash", "bankTransfer", "esewa", "khalti"];
+export const PAYMENT_METHODS = ["cash", "bank", "esewa", "khalti"];
 export const paymentFormSchema = z.object({
   amount: moneyString({ label: "Rs", allowZero: false }),
   paymentMethod: z.enum(PAYMENT_METHODS).default("cash"),

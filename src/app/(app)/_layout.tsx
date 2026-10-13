@@ -65,7 +65,7 @@ function tabIcon(active: IconName, inactive: IconName, raised: boolean) {
 
 export default function AppLayout() {
   const insets = useSafeAreaInsets();
-  const [isSheetOpen, setIsSheetOpen] = useState(true);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   return (
     <>

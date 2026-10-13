@@ -27,7 +27,7 @@ api.interceptors.request.use((config) => {
 // normalize errors, and sign out on 401
 api.interceptors.response.use(
   (res) => res,
-  async (err: AxiosError<{ message?: string }>) => {
+  async (err: AxiosError<{ message?: string; code?: string }>) => {
     const status = err.response?.status ?? 0;
     if (status === 401) {
       await clearToken();

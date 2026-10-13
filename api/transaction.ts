@@ -2,6 +2,8 @@ import { api } from "@/lib/client";
 import {
   CreateCreditPayload,
   CreateCreditResponse,
+  CreatePaymentPayload,
+  CreatePaymentResponse,
 } from "@/types/transaction-types";
 
 export async function createCredit(payload: CreateCreditPayload) {
@@ -14,6 +16,18 @@ export async function createCredit(payload: CreateCreditPayload) {
         quantity: i.qty,
         unitPrice: i.price,
       })),
+    },
+  );
+  return res.data;
+}
+
+export async function createPayment(payload: CreatePaymentPayload) {
+  const res = await api.post<CreatePaymentResponse>(
+    `/customer/${payload.customerId}/payment`,
+    {
+      amount: payload.amount,
+      paymentMethod: payload.paymentMethod,
+      remark: payload.remark,
     },
   );
   return res.data;
