@@ -7,6 +7,8 @@ import {
   GetCustomerByIdPayload,
   GetCustomerTransactions,
   GetCustomerTransactionsPayload,
+  UpdateCustomer,
+  UpdateCustomerPayload,
 } from "@/types/customer-types";
 
 export async function getAllCustomer(
@@ -17,7 +19,7 @@ export async function getAllCustomer(
   const res = await api.get<GetAllCustomer>("/customer", {
     params: { page, perpage, search },
   });
-  // console.log(res.data);
+
   return res.data;
 }
 
@@ -32,6 +34,7 @@ export async function createCustomer(
 }
 
 export async function getCustomerById(payload: GetCustomerByIdPayload) {
+  await new Promise((r) => setTimeout(r, 3000));
   const res = await api.get<GetCustomerById>(`/customer/${payload.customerId}`);
 
   return res.data;
@@ -42,9 +45,24 @@ export async function getCustomerTransactions({
   from,
   to,
 }: GetCustomerTransactionsPayload) {
+  await new Promise((r) => setTimeout(r, 5000));
   const res = await api.get<GetCustomerTransactions>(
     `/customer/${customerId}/transactions`,
     { params: { from, to } }, // undefined params are omitted by axios
+  );
+
+  return res.data;
+}
+
+export async function updateCustomer(payload: UpdateCustomerPayload) {
+  const res = await api.patch<UpdateCustomer>(
+    `/customer/${payload.customerId}`,
+    {
+      name: payload.name,
+      address: payload.address,
+      phone: payload.phone,
+      creditLimit: payload.creditLimit,
+    },
   );
 
   return res.data;

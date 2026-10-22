@@ -72,3 +72,19 @@ export type GetCustomerTransactionsPayload = {
 };
 
 export type GetCustomerTransactions = ApiSuccessResponse<CustomerTransaction[]>;
+
+//4. update customer data
+
+export type UpdateCustomerPayload = {
+  customerId: string;
+  name?: string;
+  address?: string;
+  creditLimit?: string;
+  image?: string;
+  phone?: string;
+};
+
+export type UpdateCustomer = ApiSuccessResponse<{
+  id: string;
+  name: string;
+}>;

@@ -1,5 +1,5 @@
 import { getCustomerById, getCustomerTransactions } from "@/api/customer";
-import { TransactionRow} from "@components/customer/transaction-row"
+import { TransactionRow } from "@/components/customer/transaction-row";
 import {
   Avatar,
   AvatarFallbackText,

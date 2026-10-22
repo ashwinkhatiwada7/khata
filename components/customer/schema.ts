@@ -38,3 +38,9 @@ export const createCustomerDefaultValues = {
   address: "",
   creditLimit: "",
 };
+
+export const updateCustomerSchema = createCustomerSchema.extend({
+  customerId: z.string().trim().min(1, "customerid is required"),
+});
+
+export type updateCustomerSchemaType = z.infer<typeof updateCustomerSchema>;

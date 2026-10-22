@@ -1,11 +1,12 @@
 import { Customer } from "@/types/customer-types";
+import { getRelativeTime } from "@/utils/getRelativeTime";
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { Avatar, AvatarFallbackText, AvatarImage } from "../ui/avatar";
 
 export function CustomerRow({ item }: { item: Customer }) {
   const settled = Number(item.creditLimit) === 0;
-
+  const relativeTime = getRelativeTime(item.updatedAt);
   return (
     <Link
       href={{
@@ -35,9 +36,14 @@ export function CustomerRow({ item }: { item: Customer }) {
         {settled ? (
           <Text className="text-sm font-semibold text-green-600">Settled</Text>
         ) : (
-          <Text className="text-base font-bold text-red-600">
-            Rs. {item.creditBalance}
-          </Text>
+          <View className=" flex flex-col justify-center items-end">
+            <Text className="text-base font-bold text-red-600">
+              Rs. {item.creditBalance}
+            </Text>
+            <Text className="text-xs text-muted-foreground">
+              {relativeTime}
+            </Text>
+          </View>
         )}
       </Pressable>
     </Link>
