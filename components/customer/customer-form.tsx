@@ -1,116 +1,189 @@
-import { useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
-import type { Customer } from "./customers";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { useRef } from "react";
+// import { Controller, useForm } from "react-hook-form";
+// import {
+//   KeyboardAvoidingView,
+//   Platform,
+//   ScrollView,
+//   TextInput,
+// } from "react-native";
+// import { Box } from "../ui/box";
+// import { Button, ButtonSpinner, ButtonText } from "../ui/button";
+// import { Input, InputField } from "../ui/input";
+// import { Text } from "../ui/text";
+// import { VStack } from "../ui/vstack";
+// import {
+//   createCustomerDefaultValues,
+//   createCustomerSchema,
+//   createCustomerType,
+// } from "./schema";
 
-export type CustomerFormValues = Omit<Customer, "id">;
+// type Props = {
+//   defaultValues?: Partial<createCustomerType>;
+//   submitLabel?: string;
+//   isSubmitting?: boolean;
+//   onSubmit: (values: createCustomerType) => void | Promise<void>;
+// };
 
-type Props = {
-  initial?: CustomerFormValues;
-  submitLabel: string;
-  onSubmit: (values: CustomerFormValues) => void;
-};
+// export default function CustomerForm({
+//   defaultValues,
+//   submitLabel = "Create customer",
+//   isSubmitting = false,
+//   onSubmit,
+// }: Props) {
+//   const { control, handleSubmit } = useForm<createCustomerType>({
+//     resolver: zodResolver(createCustomerSchema),
+//     defaultValues: { ...createCustomerDefaultValues, ...defaultValues },
+//     mode: "onTouched",
+//   });
 
-function Field({
-  label,
-  error,
-  ...props
-}: React.ComponentProps<typeof TextInput> & { label: string; error?: string }) {
-  return (
-    <View className="gap-1">
-      <Text className="text-sm font-medium text-gray-700">{label}</Text>
-      <TextInput
-        className={`h-12 rounded-xl border bg-white px-4 text-base text-black ${
-          error ? "border-red-500" : "border-[#eceaf5]"
-        }`}
-        placeholderTextColor="#9b97a8"
-        autoCorrect={false}
-        {...props}
-      />
-      {error ? <Text className="text-xs text-red-600">{error}</Text> : null}
-    </View>
-  );
-}
+//   const phoneRef = useRef<TextInput>(null);
+//   const addressRef = useRef<TextInput>(null);
+//   const creditRef = useRef<TextInput>(null);
 
-export function CustomerForm({ initial, submitLabel, onSubmit }: Props) {
-  const [name, setName] = useState(initial?.name ?? "");
-  const [phone, setPhone] = useState(initial?.phone ?? "");
-  const [credit, setCredit] = useState(
-    initial && initial.credit > 0 ? String(initial.credit) : "",
-  );
-  const [submitted, setSubmitted] = useState(false);
+//   return (
+//     <KeyboardAvoidingView
+//       className="flex-1 bg-background"
+//       behavior={Platform.OS === "ios" ? "padding" : undefined}
+//     >
+//       <ScrollView
+//         contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
+//         keyboardShouldPersistTaps="handled"
+//         keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
+//         automaticallyAdjustKeyboardInsets
+//         showsVerticalScrollIndicator={false}
+//       >
+//         <VStack space="lg">
+//           <Controller
+//             control={control}
+//             name="name"
+//             render={({ field, fieldState }) => (
+//               <Box className="gap-1">
+//                 <Text className="text-xs">Name</Text>
+//                 <Input
+//                   className={`h-12 rounded-xl border px-2 ${fieldState.error ? "border-destructive" : "border-border"}`}
+//                 >
+//                   <InputField
+//                     placeholder="Customer name"
+//                     autoCapitalize="words"
+//                     returnKeyType="next"
+//                     value={field.value}
+//                     onChangeText={field.onChange}
+//                     onBlur={field.onBlur}
+//                     onSubmitEditing={() => phoneRef.current?.focus()}
+//                     submitBehavior="submit"
+//                   />
+//                 </Input>
+//                 {fieldState.error && (
+//                   <Text className="text-xs text-red-600">
+//                     {fieldState.error.message}
+//                   </Text>
+//                 )}
+//               </Box>
+//             )}
+//           />
 
-  const nameError = name.trim() ? undefined : "Name is required";
-  const phoneError = /^\d{10}$/.test(phone)
-    ? undefined
-    : "Enter a 10 digit phone number";
-  const creditError =
-    credit === "" || /^\d+(\.\d{1,2})?$/.test(credit)
-      ? undefined
-      : "Enter a valid amount";
-  const valid = !nameError && !phoneError && !creditError;
+//           <Controller
+//             control={control}
+//             name="phone"
+//             render={({ field, fieldState }) => (
+//               <Box className="gap-1">
+//                 <Text className="text-xs">Phone</Text>
+//                 <Input
+//                   className={`h-12 rounded-xl border px-2 ${fieldState.error ? "border-destructive" : "border-border"}`}
+//                 >
+//                   <InputField
+//                     ref={phoneRef}
+//                     placeholder="98XXXXXXXX"
+//                     keyboardType="phone-pad"
+//                     maxLength={10}
+//                     returnKeyType="next"
+//                     value={field.value}
+//                     onChangeText={(t) => field.onChange(t.replace(/\D/g, ""))}
+//                     onBlur={field.onBlur}
+//                     onSubmitEditing={() => addressRef.current?.focus()}
+//                     submitBehavior="submit"
+//                   />
+//                 </Input>
+//                 {fieldState.error && (
+//                   <Text className="text-xs text-red-600">
+//                     {fieldState.error.message}
+//                   </Text>
+//                 )}
+//               </Box>
+//             )}
+//           />
 
-  const onSave = () => {
-    setSubmitted(true);
-    if (!valid) return;
-    onSubmit({
-      name: name.trim(),
-      phone,
-      credit: credit === "" ? 0 : Number(credit),
-    });
-  };
+//           <Controller
+//             control={control}
+//             name="address"
+//             render={({ field, fieldState }) => (
+//               <Box className="gap-1">
+//                 <Text className="text-xs">Address</Text>
+//                 <Input
+//                   className={`h-12 rounded-xl border px-2 ${fieldState.error ? "border-destructive" : "border-border"}`}
+//                 >
+//                   <InputField
+//                     ref={addressRef}
+//                     placeholder="Customer address"
+//                     autoCapitalize="words"
+//                     returnKeyType="next"
+//                     value={field.value}
+//                     onChangeText={field.onChange}
+//                     onBlur={field.onBlur}
+//                     onSubmitEditing={() => creditRef.current?.focus()}
+//                     submitBehavior="submit"
+//                   />
+//                 </Input>
+//                 {fieldState.error && (
+//                   <Text className="text-xs text-red-600">
+//                     {fieldState.error.message}
+//                   </Text>
+//                 )}
+//               </Box>
+//             )}
+//           />
 
-  return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-background"
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={{ padding: 16, gap: 16 }}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
-      >
-        <Field
-          label="Name"
-          placeholder="Customer name"
-          value={name}
-          onChangeText={setName}
-          autoCapitalize="words"
-          error={submitted ? nameError : undefined}
-        />
-        <Field
-          label="Phone"
-          placeholder="98XXXXXXXX"
-          value={phone}
-          onChangeText={(t) => setPhone(t.replace(/\D/g, "").slice(0, 10))}
-          keyboardType="phone-pad"
-          error={submitted ? phoneError : undefined}
-        />
-        <Field
-          label="Total credit (optional)"
-          placeholder="0"
-          value={credit}
-          onChangeText={setCredit}
-          keyboardType="decimal-pad"
-          error={submitted ? creditError : undefined}
-        />
+//           <Controller
+//             control={control}
+//             name="creditLimit"
+//             render={({ field, fieldState }) => (
+//               <Box className="gap-1">
+//                 <Text className="text-xs">Credit limit</Text>
+//                 <Input
+//                   className={`h-12 rounded-xl border px-2 ${fieldState.error ? "border-destructive" : "border-border"}`}
+//                 >
+//                   <InputField
+//                     ref={creditRef}
+//                     placeholder="0.00"
+//                     keyboardType="decimal-pad"
+//                     returnKeyType="done"
+//                     value={field.value}
+//                     onChangeText={field.onChange}
+//                     onBlur={field.onBlur}
+//                     onSubmitEditing={handleSubmit(onSubmit)}
+//                     submitBehavior="blurAndSubmit"
+//                   />
+//                 </Input>
+//                 {fieldState.error && (
+//                   <Text className="text-xs text-red-600">
+//                     {fieldState.error.message}
+//                   </Text>
+//                 )}
+//               </Box>
+//             )}
+//           />
 
-        <Pressable
-          onPress={onSave}
-          className="mt-2 h-12 items-center justify-center rounded-xl bg-[#5f33e1] active:opacity-80"
-        >
-          <Text className="text-base font-semibold text-white">
-            {submitLabel}
-          </Text>
-        </Pressable>
-      </ScrollView>
-    </KeyboardAvoidingView>
-  );
-}
+//           <Button
+//             className="mt-2 h-12 rounded-xl"
+//             isDisabled={isSubmitting}
+//             onPress={handleSubmit(onSubmit)}
+//           >
+//             {isSubmitting && <ButtonSpinner />}
+//             <ButtonText>{submitLabel}</ButtonText>
+//           </Button>
+//         </VStack>
+//       </ScrollView>
+//     </KeyboardAvoidingView>
+//   );
+// }

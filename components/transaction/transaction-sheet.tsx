@@ -41,7 +41,7 @@ export default function TransactionSheet({
         className="pb-0 rounded-t-4xl"
       >
         <ActionsheetDragIndicatorWrapper>
-          <ActionsheetDragIndicator className=" bg-black w-10 h-2" />
+          <ActionsheetDragIndicator className=" bg-black w-20 h-2" />
         </ActionsheetDragIndicatorWrapper>
         <Box className=" w-full">
           <Pressable

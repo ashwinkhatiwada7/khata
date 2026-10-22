@@ -1,11 +1,12 @@
 import { authClient, clearToken, getToken } from "@/lib/authClient";
+import { ErrorResponse } from "@/types/api-response-type";
 import axios, { AxiosError } from "axios";
 
 export class ApiError extends Error {
   constructor(
     public status: number,
     message: string,
-    public data?: unknown,
+    public data?: ErrorResponse,
   ) {
     super(message);
   }
@@ -27,7 +28,7 @@ api.interceptors.request.use((config) => {
 // normalize errors, and sign out on 401
 api.interceptors.response.use(
   (res) => res,
-  async (err: AxiosError<{ message?: string; code?: string }>) => {
+  async (err: AxiosError<ErrorResponse>) => {
     const status = err.response?.status ?? 0;
     if (status === 401) {
       await clearToken();

@@ -2,23 +2,58 @@ import { getAllCustomer } from "@/api/customer";
 import { CustomerRow } from "@/components/customer/customer-row";
 import CustomerListSkeleton from "@/components/customer/skeleton/customerlist-skeleton";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  RefreshControl,
+  Text,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const PER_PAGE = 20;
 
 export default function Customer() {
   const insets = useSafeAreaInsets();
-  // CUSTOMERS is mutated in memory by the create screen; re-read on focus.
-  // const [data, setData] = useState(CUSTOMERS);
-  // useFocusEffect(useCallback(() => setData([...CUSTOMERS]), []));
+  const [refreshing, setRefreshing] = useState(false);
 
-  const { data, isPending, isError, error, refetch, isRefetching } = useQuery({
+  const {
+    data,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isRefetching,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ["customers"],
-    queryFn: () => getAllCustomer(),
+    queryFn: ({ pageParam }) => getAllCustomer(pageParam, PER_PAGE),
+    initialPageParam: 1,
+    getNextPageParam: (last) => {
+      const meta = last.meta;
+      return meta && meta.page < meta.totalPages ? meta.page + 1 : undefined;
+    },
   });
 
-  // const isSkeleton = false;
+  // dedupe by id in case pages overlap (server ignoring paging, or a row shifting after create)
+  const customers = Array.from(
+    new Map(
+      (data?.pages.flatMap((p) => p.data) ?? []).map((c) => [c.id, c]),
+    ).values(),
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
+
   if (isPending) {
     return (
       <View
@@ -31,7 +66,7 @@ export default function Customer() {
     );
   }
 
-  if (isError) {
+  if (isError && !data) {
     return (
       <View className="flex-1 items-center justify-center gap-3 px-8">
         <Ionicons name="alert-circle-outline" size={40} color="#d6336c" />
@@ -66,8 +101,18 @@ export default function Customer() {
       </Pressable>
 
       <FlatList
-        data={data.data}
+        data={customers}
         keyExtractor={(c) => c.id}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+        }}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isFetchingNextPage ? <ActivityIndicator className="py-4" /> : null
+        }
         ListEmptyComponent={() => (
           <View className="flex-1 justify-center items-center">
             <Text>No Customer found</Text>
@@ -84,7 +129,7 @@ export default function Customer() {
         accessibilityLabel="Add customer"
         className="absolute bottom-5 right-5 h-14 w-14 items-center justify-center rounded-full bg-[#5f33e1] shadow-lg active:opacity-80"
       >
-        <Ionicons name="add" size={28} color="#fff" />
+        <Ionicons name="person-add-outline" size={20} color="#fff" />
       </Pressable>
     </View>
   );

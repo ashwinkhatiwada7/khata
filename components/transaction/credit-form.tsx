@@ -180,8 +180,6 @@ export default function CreditForm({
                     value={field.value}
                     onChangeText={field.onChange}
                     onBlur={field.onBlur}
-                    returnKeyType="done"
-                    onSubmitEditing={addItem}
                   />
                 </Input>
                 {fieldState.error && (
@@ -212,7 +210,7 @@ export default function CreditForm({
         data={fields}
         keyExtractor={(f) => f.id}
         style={{
-          maxHeight: 280,
+          maxHeight: 350,
         }}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"

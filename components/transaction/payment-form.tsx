@@ -88,13 +88,13 @@ export default function PaymentForm({
         <Box className="w-full items-center justify-around gap-10 py-10">
           <Box className="items-center">
             <Ionicons name="alert" size={72} color="#E1AF17" />
-            <Text className="text-lg text-warning font-bold">
+            {/* <Text className="text-lg text-warning font-bold">
               Failed to save payment
-            </Text>
-            <Text className="text-center text-gray-600">
+            </Text> */}
+            <Text className="text-center text-warning text-">
               Rs. {amount} failed for {customer?.name}
             </Text>
-            <Text className="text-2xl">{saveError.message}</Text>
+            <Text className="text-xl text-warning">{saveError.message}</Text>
           </Box>
 
           <Button className="w-30 mt-10 rounded-2xl" onPress={onClose}>
